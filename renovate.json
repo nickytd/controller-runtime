@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 0,
+  "postUpdateOptions": ["gomodTidy"],
+  "packageRules": [
+    {
+      "description": "Group the whole Kubernetes stack across every module into one PR",
+      "groupName": "kubernetes",
+      "matchDatasources": ["go"],
+      "matchPackageNames": [
+        "k8s.io/**",
+        "sigs.k8s.io/**"
+      ]
+    },
+    {
+      "description": "Keep the Go toolchain directive bumps separate",
+      "matchDepTypes": ["golang"],
+      "groupName": "go toolchain"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: widgets.example.com
+spec:
+  group: example.com
+  names:
+    kind: Widget
+    listKind: WidgetList
+    plural: widgets
+    singular: widget
+  scope: Namespaced
+  # Multi-version CRD with a webhook conversion strategy. The API server calls
+  # the conversion webhook whenever a client reads a version other than the one
+  # stored in etcd (here: v1alpha1 is storage, v1beta1 is served for reads).
+  #
+  # envtest reads spec.conversion.webhook.clientConfig.service and rewrites it to
+  # the local serving host/port it allocates, injecting the matching caBundle —
+  # the same mechanism it uses for validating/mutating webhook configs.
+  conversion:
+    strategy: Webhook
+    webhook:
+      conversionReviewVersions: ["v1"]
+      clientConfig:
+        service:
+          name: webhook-service
+          namespace: default
+          # controller-runtime serves conversion at a fixed path (not GVK-derived).
+          path: /convert
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                color:
+                  type: string
+                size:
+                  type: integer
+            status:
+              type: object
+              properties:
+                ready:
+                  type: boolean
+      subresources:
+        status: {}
+    - name: v1beta1
+      served: true
+      storage: false
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                color:
+                  type: string
+                magnitude:
+                  type: integer
+            status:
+              type: object
+              properties:
+                ready:
+                  type: boolean
+      subresources:
+        status: {}

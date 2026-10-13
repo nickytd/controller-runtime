@@ -1,0 +1,31 @@
+# MutatingWebhookConfiguration for the Widget defaulter.
+#
+# envtest loads this via WebhookInstallOptions.Paths. Its ModifyWebhookDefinitions
+# step reads clientConfig.service.path, rewrites clientConfig to a url: pointing
+# at the local serving host/port it allocates, clears the service, and injects
+# the matching caBundle. (It only rewrites when a service with a path is present
+# — an explicit url: would be left untouched, so we use a service reference.)
+# The path must match the one controller-runtime generates from the GVK:
+#   /mutate-<group-dashed>-<version>-<kind-lowercased>
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: widget-mutating-webhook
+webhooks:
+  - name: default.widget.example.com
+    admissionReviewVersions: ["v1"]
+    sideEffects: None
+    failurePolicy: Fail
+    clientConfig:
+      # envtest rewrites this service reference into a local url + caBundle. In a
+      # real cluster this would name the Service fronting the webhook deployment.
+      service:
+        name: webhook-service
+        namespace: default
+        path: /mutate-example-com-v1alpha1-widget
+    rules:
+      - apiGroups: ["example.com"]
+        apiVersions: ["v1alpha1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["widgets"]
+        scope: Namespaced

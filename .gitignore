@@ -1,0 +1,16 @@
+# Compiled binaries — each case folder may have a binary named after the folder
+*/[0-9][0-9]-*
+!*/[0-9][0-9]-*/main.go
+!*/[0-9][0-9]-*/go.mod
+!*/[0-9][0-9]-*/go.sum
+!*/[0-9][0-9]-*/*.yaml
+!*/[0-9][0-9]-*/*.go
+!*/[0-9][0-9]-*/*_test.go
+!*/[0-9][0-9]-*/config/**
+
+# Go build cache
+*.test
+*.out
+
+# macOS
+.DS_Store
