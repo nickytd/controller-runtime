@@ -5,6 +5,7 @@
     ":semanticCommits",
     ":semanticCommitTypeAll(chore)"
   ],
+  "schedule": ["on the first day of the month"],
   "labels": ["dependencies"],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 0,
